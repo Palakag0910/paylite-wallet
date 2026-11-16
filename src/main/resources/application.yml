@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: paylite
+  datasource:
+    url: jdbc:postgresql://localhost:5432/paylite
+    username: paylite
+    password: paylite_pass
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
