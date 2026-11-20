@@ -33,7 +33,6 @@ public class Wallet {
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Instant updatedAt;
 
-
     protected Wallet()
     {
     }
