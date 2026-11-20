@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.dao.DataIntegrityViolationException;
 
 
 
@@ -35,6 +36,12 @@ public class GlobalExceptionHandler {
         return response;
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handleIntegrity(DataIntegrityViolationException ex)
+    {
+        log.warn("Data integrity violation", ex);
+        return build(ErrorCode.CONFLICT, "This request conflicts with existing data.");
+    }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> handleAny(Exception ex)
