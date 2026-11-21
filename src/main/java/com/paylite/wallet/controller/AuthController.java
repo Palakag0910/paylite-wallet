@@ -1,6 +1,8 @@
 package com.paylite.wallet.controller;
 
+import com.paylite.wallet.dto.LoginRequest;
 import com.paylite.wallet.dto.SignupRequest;
+import com.paylite.wallet.dto.TokenResponse;
 import com.paylite.wallet.dto.UserResponse;
 import com.paylite.wallet.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,5 +29,11 @@ public class AuthController {
     public UserResponse signup(@Valid @RequestBody SignupRequest request)
     {
         return authService.signup(request);
+    }
+
+    @PostMapping("/login")
+    public TokenResponse login(@Valid @RequestBody LoginRequest request)
+    {
+        return authService.login(request);
     }
 }

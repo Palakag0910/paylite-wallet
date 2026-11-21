@@ -1,6 +1,8 @@
 package com.paylite.wallet.service;
 
+import com.paylite.wallet.dto.LoginRequest;
 import com.paylite.wallet.dto.SignupRequest;
+import com.paylite.wallet.dto.TokenResponse;
 import com.paylite.wallet.dto.UserResponse;
 import com.paylite.wallet.entity.Role;
 import com.paylite.wallet.entity.User;
@@ -14,17 +16,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+
 @Service
 public class AuthService {
 
     private final UserRepository users;
     private final WalletRepository wallets;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthService(UserRepository users, WalletRepository wallets, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository users, WalletRepository wallets,
+                       PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.users = users;
         this.wallets = wallets;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -51,4 +58,15 @@ public class AuthService {
         return new UserResponse(user.getId(), user.getName(), user.getEmail(),
                 user.getPhone(), user.getRole().name());
     }
+
+    @Transactional(readOnly = true)
+    public TokenResponse login(LoginRequest request) {
+        User user = users.findByEmail(request.email().trim().toLowerCase())
+                .filter(u -> passwordEncoder.matches(request.password(), u.getPasswordHash()))
+                .orElseThrow(() -> new ApiException(ErrorCode.UNAUTHORIZED,
+                        "Invalid email or password."));
+        return new TokenResponse(jwtService.createAccessToken(user), "Bearer",
+                jwtService.getAccessSeconds());
+    }
+
 }
