@@ -1,6 +1,7 @@
 package com.paylite.wallet.service;
 
 import com.paylite.wallet.dto.LoginRequest;
+import com.paylite.wallet.dto.MeResponse;
 import com.paylite.wallet.dto.SignupRequest;
 import com.paylite.wallet.dto.TokenResponse;
 import com.paylite.wallet.dto.UserResponse;
@@ -67,6 +68,15 @@ public class AuthService {
                         "Invalid email or password."));
         return new TokenResponse(jwtService.createAccessToken(user), "Bearer",
                 jwtService.getAccessSeconds());
+    }
+
+    @Transactional(readOnly = true)
+    public MeResponse me(Long userId)
+    {
+        User user = users.findById(userId)
+                .orElseThrow(() -> new ApiException(ErrorCode.NOT_FOUND,"User not found."));
+        return new MeResponse(user.getId(), user.getName(), user.getEmail(),
+                user.getPhone(), user.getRole().name());
     }
 
 }
